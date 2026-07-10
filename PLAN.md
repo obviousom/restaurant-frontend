@@ -1,4 +1,4 @@
-# Frontend Build Plan (5 Phases)
+# Frontend Build Plan (6 Phases)
 
 Companion to the backend repo's `PLAN.md` and the cross-repo overview in
 `restaurantmate/PLAN.md` at the workspace root. This file tracks only the
@@ -48,3 +48,20 @@ frontend's responsibilities in each phase.
   Phases 1–4.
 - **Done when:** the dashboard renders real aggregated data, the test
   suite passes, and the app is usable on mobile widths.
+
+## Phase 6 — Delivery Management
+- Order type selector: customer chooses dine-in vs. delivery at checkout.
+- Delivery address form + address book (save/reuse past addresses).
+- Delivery address validation + map preview (optional, if using map
+  library).
+- Delivery checkout: show delivery charges (base + distance calc), add to
+  bill.
+- Staff dashboard: delivery order queue, driver assignment screen, live
+  driver status map (show in-transit orders, driver location, ETA).
+- Driver mobile view (simplified): current delivery, status buttons
+  (picked-up, in-transit, delivered), navigation/directions link.
+- Customer delivery tracking: order status, driver info, live location
+  (if shared), ETA.
+- **Done when:** a customer can place a delivery order with an address,
+  staff can assign it to a driver and track it live, and the delivery
+  charges are calculated and added to the bill.
