@@ -1,4 +1,4 @@
-# Frontend Build Plan (6 Phases)
+# Frontend Build Plan (7 Phases)
 
 Companion to the backend repo's `PLAN.md` and the cross-repo overview in
 `restaurantmate/PLAN.md` at the workspace root. This file tracks only the
@@ -65,3 +65,67 @@ frontend's responsibilities in each phase.
 - **Done when:** a customer can place a delivery order with an address,
   staff can assign it to a driver and track it live, and the delivery
   charges are calculated and added to the bill.
+
+## Phase 7 — Animations & Premium UX Polish
+Install **Framer Motion** (animation library) + keep TailwindCSS for
+micro-animations. Apply smooth motion across:
+
+### Page & Route Transitions
+- Fade-in when navigating between pages (e.g., menu → orders → billing).
+- Slide transitions for modals and drawers (e.g., address book, order details).
+- Stagger animation for lists (orders, inventory items) — each row fades/slides
+  in sequentially with 50–100ms delay.
+
+### Component Entrance/Exit
+- Menu items fade + scale-up on page load (staggered).
+- Order line items slide in from left when added to cart.
+- Notification toasts slide in from bottom-right, pause 3–4s, slide out.
+- Modals fade-in + scale (0.95 → 1) for a subtle "pop" effect.
+
+### Micro-interactions
+- Button hover: subtle scale (1 → 1.02) + shadow lift via Tailwind.
+- Button press: instant scale down (1 → 0.98), rapid spring back.
+- Form input focus: underline grows smoothly (0 → 100% width).
+- Checkbox/radio: checkmark draws in (animate SVG stroke-dashoffset).
+- Dropdown menu items highlight with background color fade.
+
+### Loading States & Skeleton Screens
+- Page load: skeleton placeholders (gray shimmer pulse) for menu items,
+  orders, inventory.
+- Skeleton → real content: fade out skeleton, fade in data simultaneously.
+- Spinner: rotate animation (smooth, continuous).
+- Submit button: show loading spinner inside button, disable interaction.
+
+### Scroll-Triggered Animations
+- Dashboard charts: fade + slide-up as they come into viewport.
+- Inventory low-stock badge: subtle pulse/wiggle to draw attention.
+
+### Chart Animations (Recharts)
+- Bar/line charts: bars/lines animate from 0 to final value on mount (0.5–1s).
+- Hover effects: bar color brightens smoothly, tooltip appears with fade.
+
+### Delivery Map & Status Updates
+- Driver location dot: smooth transition when location updates (0.3–0.5s).
+- Route line: animate drawing from start to destination point.
+- Order status change (e.g., "in-kitchen" → "ready"): status badge pulses
+  then glows briefly.
+
+### Form Validation
+- Field error: shake animation (oscillate left-right) when validation fails.
+- Success checkmark: fade in + scale-up when field validates.
+
+### Best Practices
+- **Easing:** use Framer Motion presets (easeInOut for 0.3s, easeOut for
+  bouncy elements).
+- **Duration:** 200–400ms for micro-interactions, 600–1000ms for page
+  transitions, 1500–2500ms for entry sequences.
+- **Performance:** always use `will-change` in Tailwind for animated
+  elements; use `transform` + `opacity` (GPU-accelerated) not `top`/`left`.
+- **Accessibility:** respect `prefers-reduced-motion: reduce` media query —
+  disable all animations for users who prefer reduced motion.
+- **Mobile:** use shorter durations (150–250ms) and lighter easing on touch
+  devices to feel snappy.
+
+- **Done when:** every interactive element has a delightful, responsive
+  animation; the app feels premium and never janky; no animations trigger
+  for users with reduced-motion preference.
