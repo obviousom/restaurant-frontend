@@ -11,4 +11,5 @@ export interface MenuItem {
   description: string;
   price: string;
   is_available: boolean;
+  is_veg: boolean;
 }

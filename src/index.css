@@ -4,26 +4,35 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 222 47% 11%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 222 47% 11%;
-    --radius: 0.5rem;
+    --background: 37 72% 94%;
+    --foreground: 18 46% 12%;
+    --card: 40 100% 98%;
+    --card-foreground: 18 46% 12%;
+    --popover: 40 100% 98%;
+    --popover-foreground: 18 46% 12%;
+    --primary: 351 56% 27%;
+    --primary-foreground: 38 58% 90%;
+    --secondary: 39 56% 88%;
+    --secondary-foreground: 18 46% 12%;
+    --muted: 39 56% 88%;
+    --muted-foreground: 23 18% 46%;
+    --accent: 40 56% 52%;
+    --accent-foreground: 347 57% 18%;
+    --destructive: 0 45% 42%;
+    --destructive-foreground: 38 58% 90%;
+    --destructive-subtle: 6 54% 92%;
+    --success: 123 23% 39%;
+    --success-foreground: 40 100% 98%;
+    --success-subtle: 102 30% 92%;
+    --warning: 35 71% 42%;
+    --warning-foreground: 40 100% 98%;
+    --warning-subtle: 37 81% 92%;
+    --border: 37 46% 82%;
+    --input: 37 46% 82%;
+    --ring: 351 56% 27%;
+    --sidebar: 347 57% 18%;
+    --sidebar-foreground: 38 58% 90%;
+    --radius: 0.375rem;
   }
 
   * {
@@ -31,6 +40,21 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
+}
+
+@layer utilities {
+  .heritage-stripe {
+    background: repeating-linear-gradient(90deg, hsl(var(--primary)) 0 24px, hsl(var(--accent)) 24px 48px);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
 }

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
+import { firstAllowedPath } from "@/components/layout/nav";
 import { useAuth } from "@/hooks/useAuth";
 import type { Role } from "@/types/auth";
 
@@ -17,7 +18,7 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={firstAllowedPath(user.role)} replace />;
   }
 
   return <>{children}</>;

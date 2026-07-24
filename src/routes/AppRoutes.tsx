@@ -1,18 +1,32 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { firstAllowedPath } from "@/components/layout/nav";
 import AppShell from "@/components/layout/AppShell";
+import { useAuth } from "@/hooks/useAuth";
 import BillingPage from "@/pages/BillingPage";
 import DashboardPage from "@/pages/DashboardPage";
+import ExpensesPage from "@/pages/ExpensesPage";
 import InventoryPage from "@/pages/InventoryPage";
 import KitchenPage from "@/pages/KitchenPage";
 import LoginPage from "@/pages/LoginPage";
 import MenuPage from "@/pages/MenuPage";
 import OrdersPage from "@/pages/OrdersPage";
+import PnlPage from "@/pages/PnlPage";
 import PurchasesPage from "@/pages/PurchasesPage";
 import RecipesPage from "@/pages/RecipesPage";
+import SalesAnalyticsPage from "@/pages/SalesAnalyticsPage";
+import StaffPage from "@/pages/StaffPage";
 import SuppliersPage from "@/pages/SuppliersPage";
 
 import ProtectedRoute from "./ProtectedRoute";
+
+function RoleHome() {
+  const { isAuthenticated, user } = useAuth();
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+  return <Navigate to={firstAllowedPath(user.role)} replace />;
+}
 
 export default function AppRoutes() {
   return (
@@ -26,8 +40,46 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<DashboardPage />} />
-
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expenses"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <ExpensesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pnl"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <PnlPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/staff"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <StaffPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <SalesAnalyticsPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/orders"
           element={
@@ -94,8 +146,8 @@ export default function AppRoutes() {
         />
       </Route>
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<RoleHome />} />
+      <Route path="*" element={<RoleHome />} />
     </Routes>
   );
 }

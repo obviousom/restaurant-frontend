@@ -1,8 +1,7 @@
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -12,17 +11,25 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCreateIngredient, useIngredients } from "@/services/inventoryService";
+import { cn, getApiErrorMessage } from "@/lib/utils";
+import { useCreateIngredient, useDeleteIngredient, useIngredients } from "@/services/inventoryService";
 
 const emptyForm = { name: "", unit: "", quantity_in_stock: "", low_stock_threshold: "" };
 
 export default function InventoryPage() {
   const { data: ingredients = [], isLoading } = useIngredients();
   const createIngredient = useCreateIngredient();
+  const deleteIngredient = useDeleteIngredient();
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const removeIngredient = (id: number, name: string) => {
+    if (!window.confirm(`Delete "${name}"? This can't be undone.`)) return;
+    setErrorMsg("");
+    deleteIngredient.mutate(id, { onError: (err) => setErrorMsg(getApiErrorMessage(err)) });
+  };
 
   const submit = () => {
     if (!form.name || !form.unit) return;
@@ -46,16 +53,16 @@ export default function InventoryPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Inventory</h2>
-          <p className="text-muted-foreground">Current ingredient stock levels.</p>
+          <h2 className="font-serif text-3xl font-bold text-primary">Inventory</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Stock levels across the kitchen store.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button>New Ingredient</Button>
+            <Button className="rounded-sm">New Ingredient</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>New Ingredient</DialogTitle>
+              <DialogTitle className="font-serif">New Ingredient</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
               <div className="space-y-2">
@@ -92,43 +99,66 @@ export default function InventoryPage() {
         </Dialog>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Ingredients</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading...</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Unit</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>Threshold</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ingredients.map((ing) => (
-                  <TableRow key={ing.id}>
-                    <TableCell className="font-medium">{ing.name}</TableCell>
-                    <TableCell>{ing.unit}</TableCell>
-                    <TableCell>{ing.quantity_in_stock}</TableCell>
-                    <TableCell>{ing.low_stock_threshold}</TableCell>
-                    <TableCell>
-                      <Badge variant={ing.is_low_stock ? "destructive" : "success"}>
-                        {ing.is_low_stock ? "Low stock" : "OK"}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      {errorMsg && (
+        <div className="rounded-sm border border-destructive bg-destructive-subtle px-4 py-2.5 text-sm text-destructive">
+          {errorMsg}
+        </div>
+      )}
+
+      <div className="overflow-hidden rounded border border-border bg-card">
+        <div className="grid grid-cols-[1.6fr_0.8fr_0.8fr_1fr_0.8fr_0.4fr] bg-secondary px-5 py-3.5 text-[11.5px] font-bold uppercase tracking-wide text-primary">
+          <span>Ingredient</span>
+          <span>Stock</span>
+          <span>Reorder At</span>
+          <span>Level</span>
+          <span>Status</span>
+          <span></span>
+        </div>
+        {isLoading ? (
+          <p className="p-5 text-sm text-muted-foreground">Loading...</p>
+        ) : (
+          ingredients.map((ing) => {
+            const stock = Number(ing.quantity_in_stock);
+            const threshold = Number(ing.low_stock_threshold);
+            const pct = threshold > 0 ? Math.min(100, Math.round((stock / (threshold * 2)) * 100)) : stock > 0 ? 100 : 0;
+            return (
+              <div
+                key={ing.id}
+                className="group grid grid-cols-[1.6fr_0.8fr_0.8fr_1fr_0.8fr_0.4fr] items-center border-t border-border px-5 py-3.5 text-[13.5px]"
+              >
+                <span className="font-semibold">{ing.name}</span>
+                <span className="text-foreground/80">
+                  {ing.quantity_in_stock} {ing.unit}
+                </span>
+                <span className="text-muted-foreground">
+                  {ing.low_stock_threshold} {ing.unit}
+                </span>
+                <span className="block h-1.5 overflow-hidden rounded-full bg-secondary">
+                  <span
+                    className={cn("block h-full rounded-full", ing.is_low_stock ? "bg-warning" : "bg-success")}
+                    style={{ width: `${pct}%` }}
+                  />
+                </span>
+                <span
+                  className={cn(
+                    "w-fit rounded-full px-2.5 py-1 text-[11px] font-bold",
+                    ing.is_low_stock ? "bg-warning-subtle text-warning" : "bg-success-subtle text-success"
+                  )}
+                >
+                  {ing.is_low_stock ? "Low Stock" : "OK"}
+                </span>
+                <button
+                  onClick={() => removeIngredient(ing.id, ing.name)}
+                  title="Delete ingredient"
+                  className="justify-self-end text-muted-foreground opacity-0 hover:text-destructive group-hover:opacity-100"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

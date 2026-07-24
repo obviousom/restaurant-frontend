@@ -40,3 +40,11 @@ export function useCreateIngredient() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["ingredients"] }),
   });
 }
+
+export function useDeleteIngredient() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => api.delete(`/inventory/ingredients/${id}/`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["ingredients"] }),
+  });
+}

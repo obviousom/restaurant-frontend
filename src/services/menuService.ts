@@ -32,6 +32,7 @@ interface MenuItemInput {
   description?: string;
   price: string;
   is_available?: boolean;
+  is_veg?: boolean;
 }
 
 export function useCreateMenuItem() {
@@ -48,5 +49,21 @@ export function useUpdateMenuItem() {
     mutationFn: async ({ id, ...input }: Partial<MenuItemInput> & { id: number }) =>
       (await api.patch<MenuItem>(`/menu/items/${id}/`, input)).data,
     onSuccess: () => qc.invalidateQueries({ queryKey: ["menu-items"] }),
+  });
+}
+
+export function useDeleteMenuItem() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => api.delete(`/menu/items/${id}/`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["menu-items"] }),
+  });
+}
+
+export function useDeleteCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => api.delete(`/menu/categories/${id}/`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
   });
 }

@@ -1,8 +1,12 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatElapsed } from "@/lib/status";
 import { useAdvanceKitchenOrder, useKitchenOrders } from "@/services/kitchenService";
 import type { OrderStatus } from "@/types/order";
+
+const COLUMNS: { key: OrderStatus; label: string }[] = [
+  { key: "PLACED", label: "Placed" },
+  { key: "IN_KITCHEN", label: "In Kitchen" },
+  { key: "READY", label: "Ready" },
+];
 
 const NEXT_STATUS: Partial<Record<OrderStatus, OrderStatus>> = {
   PLACED: "IN_KITCHEN",
@@ -21,8 +25,8 @@ export default function KitchenPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Kitchen</h2>
-        <p className="text-muted-foreground">Orders awaiting preparation, refreshed automatically.</p>
+        <h2 className="font-serif text-3xl font-bold text-primary">Kitchen Display</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Live tickets for the kitchen line.</p>
       </div>
 
       {isLoading ? (
@@ -30,36 +34,45 @@ export default function KitchenPage() {
       ) : orders.length === 0 ? (
         <p className="text-sm text-muted-foreground">No active orders in the kitchen.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {orders.map((order) => {
-            const next = NEXT_STATUS[order.status];
+        <div className="grid grid-cols-3 gap-5">
+          {COLUMNS.map((col) => {
+            const tickets = orders.filter((o) => o.status === col.key);
             return (
-              <Card key={order.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Table {order.table_number}</CardTitle>
-                    <Badge>{order.status}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <ul className="space-y-1 text-sm">
-                    {order.items.map((item) => (
-                      <li key={item.id}>
-                        {item.quantity} x {item.menu_item_name}
-                      </li>
-                    ))}
-                  </ul>
-                  {next && (
-                    <Button
-                      className="w-full"
-                      disabled={advance.isPending}
-                      onClick={() => advance.mutate({ id: order.id, status: next })}
-                    >
-                      {NEXT_LABEL[order.status]}
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
+              <div key={col.key}>
+                <div className="border-b-2 border-border pb-2.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  {col.label} · {tickets.length}
+                </div>
+                <div className="mt-3.5 flex flex-col gap-3">
+                  {tickets.map((order) => {
+                    const next = NEXT_STATUS[order.status];
+                    return (
+                      <div
+                        key={order.id}
+                        className="rounded-sm border border-border border-l-4 border-l-accent bg-card p-3.5"
+                      >
+                        <div className="mb-1 flex justify-between text-[13.5px] font-bold">
+                          <span>Table {order.table_number}</span>
+                          <span className="text-xs font-semibold text-muted-foreground">
+                            {formatElapsed(order.created_at)}
+                          </span>
+                        </div>
+                        <div className="mb-3 text-[12.5px] leading-relaxed text-foreground/80">
+                          {order.items.map((it) => `${it.quantity}× ${it.menu_item_name}`).join(", ")}
+                        </div>
+                        {next && (
+                          <button
+                            disabled={advance.isPending}
+                            onClick={() => advance.mutate({ id: order.id, status: next })}
+                            className="w-full rounded-sm bg-primary py-2 text-[12.5px] font-bold text-primary-foreground disabled:opacity-50"
+                          >
+                            {NEXT_LABEL[order.status]}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
         </div>

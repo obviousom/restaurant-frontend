@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useCreateSupplier, useSuppliers } from "@/services/suppliersService";
 
 const emptyForm = { name: "", contact_person: "", phone: "", email: "", address: "" };
@@ -37,16 +35,16 @@ export default function SuppliersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Suppliers</h2>
-          <p className="text-muted-foreground">Manage supplier contacts.</p>
+          <h2 className="font-serif text-3xl font-bold text-primary">Suppliers</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Vendors supplying the kitchen.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button>New Supplier</Button>
+            <Button className="rounded-sm">New Supplier</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>New Supplier</DialogTitle>
+              <DialogTitle className="font-serif">New Supplier</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
               {(["name", "contact_person", "phone", "email", "address"] as const).map((field) => (
@@ -67,37 +65,23 @@ export default function SuppliersPage() {
         </Dialog>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Suppliers</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading...</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Email</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {suppliers.map((s) => (
-                  <TableRow key={s.id}>
-                    <TableCell className="font-medium">{s.name}</TableCell>
-                    <TableCell>{s.contact_person}</TableCell>
-                    <TableCell>{s.phone}</TableCell>
-                    <TableCell>{s.email}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-3.5">
+          {suppliers.map((s) => (
+            <div key={s.id} className="rounded border border-border bg-card p-4.5">
+              <div className="mb-1.5 text-[15px] font-bold text-foreground">{s.name}</div>
+              {s.contact_person && (
+                <div className="mb-1 text-[12.5px] text-muted-foreground">Contact: {s.contact_person}</div>
+              )}
+              <div className="text-[12.5px] text-muted-foreground">
+                {[s.phone, s.email].filter(Boolean).join(" · ")}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
