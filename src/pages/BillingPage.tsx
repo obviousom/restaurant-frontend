@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { orderLocationLabel } from "@/lib/status";
 import { cn } from "@/lib/utils";
 import { useBills, useGenerateBill, usePayBill } from "@/services/billingService";
 import { useOrders } from "@/services/ordersService";
@@ -43,7 +44,7 @@ export default function BillingPage() {
                       className="flex items-center justify-between rounded-sm border border-border p-3 text-[13px]"
                     >
                       <span className="font-bold">
-                        Table {order.table_number}{" "}
+                        {orderLocationLabel(order)}{" "}
                         <span className="font-normal text-muted-foreground">
                           — ₹{Number(order.subtotal).toFixed(2)}
                         </span>
@@ -69,7 +70,7 @@ export default function BillingPage() {
                       )}
                     >
                       <span className="font-bold">
-                        Table {bill.table_number} · Bill #{bill.id}
+                        {bill.location_label} · Bill #{bill.id}
                       </span>
                       <span className="float-right text-muted-foreground">₹{bill.total}</span>
                     </button>
@@ -91,7 +92,7 @@ export default function BillingPage() {
                     className="flex justify-between border-t border-border py-2 text-[12.5px] text-muted-foreground"
                   >
                     <span>
-                      Table {bill.table_number} · #{bill.id}
+                      {bill.location_label} · #{bill.id}
                     </span>
                     <span className="font-bold text-success">₹{bill.total} paid</span>
                   </div>
@@ -106,7 +107,7 @@ export default function BillingPage() {
             {selectedBill ? (
               <>
                 <div className="mb-3.5 font-serif text-lg font-semibold">
-                  Bill · Table {selectedBill.table_number}
+                  Bill · {selectedBill.location_label}
                 </div>
                 <div className="border-t border-border pt-2.5">
                   <div className="flex justify-between text-[12.5px] text-muted-foreground">

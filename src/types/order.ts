@@ -1,4 +1,5 @@
 export type OrderStatus = "PLACED" | "IN_KITCHEN" | "READY" | "SERVED" | "PAID" | "CANCELLED";
+export type OrderType = "DINE_IN" | "DELIVERY";
 
 export interface OrderItem {
   id: number;
@@ -11,8 +12,12 @@ export interface OrderItem {
 
 export interface Order {
   id: number;
-  table: number;
-  table_number: number;
+  table: number | null;
+  table_number: number | null;
+  order_type: OrderType;
+  customer: number | null;
+  customer_name: string | null;
+  delivery_address: string;
   status: OrderStatus;
   created_by: number | null;
   created_at: string;
@@ -27,6 +32,9 @@ export interface OrderItemInput {
 }
 
 export interface CreateOrderInput {
-  table: number;
+  order_type?: OrderType;
+  table?: number;
+  customer?: number;
+  delivery_address?: string;
   items_input: OrderItemInput[];
 }

@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-import type { OrderStatus } from "@/types/order";
+import type { Order, OrderStatus } from "@/types/order";
 
 const STATUS_COLORS: Record<OrderStatus, { bg: string; color: string }> = {
   PLACED: { bg: "#F1E5CE", color: "#8A6A2A" },
@@ -14,6 +14,13 @@ const STATUS_COLORS: Record<OrderStatus, { bg: string; color: string }> = {
 export function statusBadgeStyle(status: OrderStatus): CSSProperties {
   const c = STATUS_COLORS[status] ?? STATUS_COLORS.PLACED;
   return { backgroundColor: c.bg, color: c.color };
+}
+
+export function orderLocationLabel(order: Pick<Order, "order_type" | "table_number" | "customer_name">): string {
+  if (order.order_type === "DELIVERY") {
+    return order.customer_name ? `Delivery · ${order.customer_name}` : "Delivery";
+  }
+  return order.table_number ? `Table ${order.table_number}` : "Dine-in";
 }
 
 export function formatElapsed(isoDate: string): string {

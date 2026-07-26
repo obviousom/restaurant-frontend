@@ -1,4 +1,4 @@
-import { formatElapsed } from "@/lib/status";
+import { formatElapsed, orderLocationLabel } from "@/lib/status";
 import { useAdvanceKitchenOrder, useKitchenOrders } from "@/services/kitchenService";
 import type { OrderStatus } from "@/types/order";
 
@@ -51,7 +51,7 @@ export default function KitchenPage() {
                         className="rounded-sm border border-border border-l-4 border-l-accent bg-card p-3.5"
                       >
                         <div className="mb-1 flex justify-between text-[13.5px] font-bold">
-                          <span>Table {order.table_number}</span>
+                          <span>{orderLocationLabel(order)}</span>
                           <span className="text-xs font-semibold text-muted-foreground">
                             {formatElapsed(order.created_at)}
                           </span>

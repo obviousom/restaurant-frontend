@@ -4,6 +4,7 @@ import { firstAllowedPath } from "@/components/layout/nav";
 import AppShell from "@/components/layout/AppShell";
 import { useAuth } from "@/hooks/useAuth";
 import BillingPage from "@/pages/BillingPage";
+import CustomersPage from "@/pages/CustomersPage";
 import DashboardPage from "@/pages/DashboardPage";
 import ExpensesPage from "@/pages/ExpensesPage";
 import InventoryPage from "@/pages/InventoryPage";
@@ -101,6 +102,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN", "MANAGER", "CASHIER"]}>
               <BillingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/customers"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN", "MANAGER"]}>
+              <CustomersPage />
             </ProtectedRoute>
           }
         />
